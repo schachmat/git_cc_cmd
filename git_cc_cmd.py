@@ -15,7 +15,7 @@ def parse_blame(f):
     for line in f:
         print(line)
 
-for filename in sys.argv:
+for filename in sys.argv[1:]:
     with open(filename) as f:
         ma_source = None
         cmd = ['git', 'blame', '--incremental', '-L', '', '', None]
