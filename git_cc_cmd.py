@@ -5,8 +5,8 @@ import subprocess
 import sys
 
 # compile regexes
-re_from = re.compile(r'From ([a-f0-9]+)')
-re_hash = re.compile(r'--- a/(\S+)')
+re_hash = re.compile(r'From ([a-f0-9]+)')
+re_file = re.compile(r'--- a/(\S+)')
 re_diff = re.compile(r'@@ -([0-9]+),([0-9]+)')
 re_auth = re.compile(r'author (.+)\n$')
 re_mail = re.compile(r'author-mail <(.+)>\n$')
@@ -33,13 +33,13 @@ for filename in sys.argv[1:]:
         cmd = ['git', 'blame', '--porcelain', '-L', None, None, None]
         for line in f:
             if not cmd[-1]:
-                m = re_from.match(line)
+                m = re_hash.match(line)
                 if m:
                     cmd[-1] = m.group(1)
                 continue
 
             # "cmd[-1]" is automatically not None at this point
-            m = re_hash.match(line)
+            m = re_file.match(line)
             if m:
                 cmd[-2] = m.group(1)
             elif cmd[-2]:
