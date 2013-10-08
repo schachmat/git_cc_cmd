@@ -42,6 +42,8 @@ for filename in sys.argv[1:]:
             m = re_file.match(line)
             if m:
                 cmd[-2] = m.group(1)
+            elif line == '--- /dev/null\n':
+                cmd[-2] = None
             elif cmd[-2]:
                 m = re_diff.match(line)
                 if m:
