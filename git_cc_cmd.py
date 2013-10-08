@@ -30,24 +30,24 @@ def parse_blame(f):
 for filename in sys.argv[1:]:
     with open(filename) as f:
         ma_source = None
-        cmd = ['git', 'blame', '--porcelain', '-L', None, None, None]
+        cmd = ['git', 'blame', '--porcelain', '-L', None, None, '--', None]
         for line in f:
-            if not cmd[-1]:
+            if not cmd[-3]:
                 m = re_hash.match(line)
                 if m:
-                    cmd[-1] = m.group(1)
+                    cmd[-3] = m.group(1) + '^'
                 continue
 
-            # "cmd[-1]" is automatically not None at this point
+            # "cmd[-3]" is automatically not None at this point
             m = re_file.match(line)
             if m:
-                cmd[-2] = m.group(1)
+                cmd[-1] = m.group(1)
             elif line == '--- /dev/null\n':
-                cmd[-2] = None
-            elif cmd[-2]:
+                cmd[-1] = None
+            elif cmd[-1]:
                 m = re_diff.match(line)
                 if m:
-                    cmd[-3] = m.group(1) + ',+' + m.group(2)
+                    cmd[-4] = m.group(1) + ',+' + m.group(2)
                     proc_blame = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                                   universal_newlines=True)
                     parse_blame(proc_blame.stdout)
