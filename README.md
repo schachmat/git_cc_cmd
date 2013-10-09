@@ -13,4 +13,5 @@ gets authors of a diff from git blame to send a cc about the diff
   there is a nice
 „[feature](https://github.com/git/git/commit/1a9eb3b9d50367bee8fe85022684d812816fe531)“
   about spaces in filenames.
-* How to handle merge commits?
+* Merge commits will not be handled, since git seems to not produce a patch-file
+  for them.
