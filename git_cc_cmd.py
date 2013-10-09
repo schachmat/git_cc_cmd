@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
+from subprocess import Popen as Proc, PIPE as pipe
 import re
-import subprocess
 import sys
 
 # compile regexes
@@ -29,28 +29,28 @@ def parse_blame(f):
 
 for filename in sys.argv[1:]:
     with open(filename) as f:
-        ma_source = None
-        cmd = ['git', 'blame', '--porcelain', '-L', None, None, '--', None]
+        parenthash, srcfile = None, None
         for line in f:
-            if not cmd[-3]:
+            if not parenthash:
                 m = re_hash.match(line)
                 if m:
-                    cmd[-3] = m.group(1) + '^'
+                    parenthash = m.group(1) + '^'
                 continue
 
-            # "cmd[-3]" is automatically not None at this point
+            # parenthash is automatically not None at this point
             m = re_file.match(line)
             if m:
-                cmd[-1] = m.group(1)
+                srcfile = m.group(1)
             elif line.startswith('--- '):
-                cmd[-1] = None
-            elif cmd[-1]:
+                srcfile = None
+            elif srcfile:
                 m = re_diff.match(line)
                 if m:
-                    cmd[-4] = m.group(1) + ',+' + m.group(2)
-                    proc_blame = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                                  universal_newlines=True)
-                    parse_blame(proc_blame.stdout)
+                    lines = m.group(1) + ',+' + m.group(2)
+                    blame = Proc(['git', 'blame', '--porcelain', '-L', lines,
+                                  parenthash, '--', srcfile],
+                                 stdout=pipe, universal_newlines=True)
+                    parse_blame(blame.stdout)
 
 for (mail, name) in authors.items():
     print(''.join(['"', name, '" <', mail, '>']))
