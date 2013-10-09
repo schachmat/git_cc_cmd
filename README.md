@@ -15,3 +15,5 @@ gets authors of a diff from git blame to send a cc about the diff
   about spaces in filenames.
 * Merge commits will not be handled, since git seems to not produce a patch-file
   for them.
+* Changes to files containing only one line will not result in this files author
+  to be output.
