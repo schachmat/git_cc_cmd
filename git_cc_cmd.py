@@ -6,7 +6,7 @@ import sys
 
 # compile regexes
 re_hash = re.compile(r'From ([a-f0-9]+)')
-re_file = re.compile(r'--- a/(\S+)')
+re_file = re.compile(r'--- a/(\S+)\n$')
 re_diff = re.compile(r'@@ -([0-9]+),([0-9]+)')
 re_auth = re.compile(r'author (.+)\n$')
 re_mail = re.compile(r'author-mail <(.+)>\n$')
@@ -42,7 +42,7 @@ for filename in sys.argv[1:]:
             m = re_file.match(line)
             if m:
                 cmd[-1] = m.group(1)
-            elif line == '--- /dev/null\n':
+            elif line.startswith('--- '):
                 cmd[-1] = None
             elif cmd[-1]:
                 m = re_diff.match(line)
